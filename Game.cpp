@@ -230,6 +230,170 @@ void Board(node* last) {
 	cout << endl;
 }
 
+// The function that keeps the game running and keeps switching turns between players
+void Start(node** last) {
+	// variable 'turns' to keep track whose turn is this
+	// if even then player 1 turn, if odd then player 2 turn
+	int turns = 0;
+	while (!(player1.win || player2.win)) {
+	start:
+		system("pause");
+		system("cls");
+		int dice = RollDice();
+		// Player1 turn
+		if (turns % 2 == 0) {
+			Stats();
+			Board(*last);
+			cout << "\n\tPlayer 1 turn!.\n\tDice: " << dice << endl;
+			// Checking if we got 6 and if we got any pieces in base
+			if (dice == 6 && player1.Static_Piece) {
+				// If there is 2 pieces in base get out one without asking the player (only valid play)
+				if (player1.Static_Piece == 2) {
+					player1.Static_Piece--; player1.Active_Piece++;
+					player1.piece1 = player1_base;
+					player1.piece1->data = 1;
+				}
+				// If code excution reached this line it means that we got 1 active piece and a piece in base
+				// so we ask the player what to do in this situation
+				else {
+					int choice;
+					cout << "If you want to move the active piece enter 1.\n";
+					cout << "If you want to activate a static piece enter 2.\n";
+					cin >> choice;
+					if (choice == 1) {
+						// if player chooses to move the active piece then we move the piece pointer 'dice' times
+						// moving mechanism is we set pointer data to 0 before moving then we move the pointer to
+						// the desired tile then write 1 down
+						player1.score1 += dice;
+						player1.piece1->data = 0;
+						move(&player1.piece1, dice);
+						player1.piece1->data = 1;
+
+						// after moving the piece if it landed on a piece from player2
+						// if this piece isn't in wining position then return it back to its base
+						if (player1.piece1 == player2.piece1 && player2.score1 != 50) {
+							// to avoid any undesired errors and to keep the code simple
+							// we will always keep 'player2.piece1' active (if player2 got any active pieces)
+
+							// if player2 got a piece in base then it means the only active piece is piece1
+							//  and then we can return it to its base easily
+							if (player2.Static_Piece) {
+								player2.score1 = 0;
+								player2.piece1 = NULL;
+								player2.Active_Piece--; player2.Static_Piece++;
+							}
+							// else player2 got 2 active pieces so we will do a simple handover by
+							// switching piece1 position to piece2 position then return piece2 to base
+							// (keeping piece1 the only active piece)
+							else {
+								player2.score1 = player1.score2;
+								player2.score2 = 0;
+								player2.piece1 = player2.piece2;
+								player2.piece2 = NULL;
+								player2.Active_Piece--; player2.Static_Piece++;
+							}
+						}
+						// if that piece was piece2 then we will simply return it back to base
+						// because piece2 will never be active if piece1 wasn't active
+						if (player1.piece1 == player2.piece2) {
+							player2.score2 = 0;
+							player2.piece2 = NULL;
+							player2.Active_Piece--; player2.Static_Piece++;
+						}
+					}
+					// player chooses to get the other piece out of the base
+					else if (choice == 2) {
+						player1.Static_Piece--; player1.Active_Piece++;
+						// if the piece in base is piece2
+						if (!player1.piece2) {
+							player1.piece2 = player1_base;
+							player1.piece2->data = 1;
+						}
+						// if the piece in base is piece1
+						else {
+							player1.piece1 = player1_base;
+							player1.piece1->data = 1;
+						}
+					}
+				}
+				// we return back to start without increamting turns because player1 got 6 so must play again
+				goto start;
+			}
+			// Check if we got any active (playable) piece
+			else if (player1.Active_Piece) {
+				// if that piece is piece1 and piece2 is in base, move piece 1 automatically without asking player
+				if (player1.piece1 && player1.score1 < 50 && !player1.piece2)
+					goto move1;
+				// if piece1 either not active or in wining position move piece2 (if active) without asking
+				if ((player1.score1 >= 50 || !player1.piece1) && player1.piece2)
+					goto move2;
+				// if only one piece is active (piece1) and in wining position then do nothing
+				if (player1.Active_Piece == 1 && player1.score1 >= 50)
+					goto skip;
+				int choice;
+				cout << "If you want to move piece 1 enter 1\n";
+				cout << "If you want to move piece 2 enter 2\n";
+				cin >> choice;
+				if (choice == 1) {
+				move1:
+					player1.score1 += dice;
+					player1.piece1->data = 0;
+					move(&player1.piece1, dice);
+					player1.piece1->data = 1;
+
+					if (player1.piece1 == player2.piece1 && player2.score1 != 50) {
+						if (player2.Static_Piece) {
+							player2.score1 = 0;
+							player2.piece1 = NULL;
+							player2.Active_Piece--; player2.Static_Piece++;
+						}
+						else {
+							player2.score1 = player2.score2;
+							player2.score2 = 0;
+							player2.piece1 = player2.piece2;
+							player2.piece2 = NULL;
+							player2.Active_Piece--; player2.Static_Piece++;
+						}
+					}
+					if (player1.piece1 == player2.piece2) {
+						player2.score2 = 0;
+						player2.piece2 = NULL;
+						player2.Active_Piece--; player2.Static_Piece++;
+					}
+				}
+				else if (choice == 2) {
+				move2:
+					player1.score2 += dice;
+					player1.piece2->data = 0;
+					move(&player1.piece2, dice);
+					player1.piece2->data = 1;
+
+					if (player1.piece2 == player2.piece1 && player2.score1 != 50) {
+						if (player2.Static_Piece) {
+							player2.score1 = 0;
+							player2.piece1 = NULL;
+							player2.Active_Piece--; player2.Static_Piece++;
+						}
+						else {
+							player2.score1 = player2.score2;
+							player2.score2 = 0;
+							player2.piece1 = player2.piece2;
+							player2.piece2 = NULL;
+							player2.Active_Piece--; player2.Static_Piece++;
+						}
+					}
+					if (player1.piece2 == player2.piece2) {
+						player2.score2 = 0;
+						player2.piece2 = NULL;
+						player2.Active_Piece--; player2.Static_Piece++;
+					}
+				}
+				// if the last dice throw got then player1 play again
+				if (dice == 6)
+					goto start;
+			}
+		}
+
 int main() {
 	return 0;
 }

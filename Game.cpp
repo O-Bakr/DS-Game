@@ -86,46 +86,6 @@ void InitializeGame(node** last) {
 int RollDice() {
 	return rand() % 6 + 1;
 }
-// 'Stats' function keep tracking the score of each player, thier pieces state
-// and wheather any of them has won or not
-// and then printing this data in a score board at the top of the game screen
-void Stats() {
-	// each piece will have to move 50 times to be considered a wining piece
-	// so a total score of 100 would mean that both pieces have won and hence the player won
-	int score1 = player1.score1 + player1.score2;
-	int score2 = player2.score1 + player2.score2;
-
-	// Condition for fixing the wining piece postion i.e. makes this piece unplayable
-	if (player1.score1 >= 50) {
-		player1.score1 = 50;
-		if (player1.piece1 != player2.piece1 || player1.piece1 != player2.piece2)
-			player1.piece1->data = 0;
-		if (!player1.pieces_won)
-			player1.pieces_won++;
-	}
-
-	if (player2.score1 >= 50) {
-		player2.score1 = 50;
-		if (player2.piece1 != player1.piece1 || player2.piece1 != player1.piece2)
-		player2.piece1->data = 0;
-		if (!player2.pieces_won)
-			player2.pieces_won++;
-	}
-
-	// Setting the wining condition if there is a piece that already won and the other piece passed 50 tiles
-	// i.e. a total score of 100 then set the player to won
-	if (player1.pieces_won && player1.score2 >= 50)
-		player1.win = true;
-	if (player2.pieces_won && player2.score2 >= 50)
-		player2.win = true;
-
-	cout << "==================================================================\n";
-	cout << "||\tPlayer1 Score: " << score1 << "\t\tPlayer2 Score: " << score2 << "\t||\n";
-	cout << "||\tActive Pieces: " << player1.Active_Piece << "\t\tActive Pieces: " << player2.Active_Piece << "\t||\n";
-	cout << "||\tPieces in Base: " << player1.Static_Piece << "\t\tPieces in Base: " << player2.Static_Piece << "\t||\n";
-	cout << "||\tPieces Won: " << player1.pieces_won << "\t\t\tPieces Won: " << player2.pieces_won << "\t\t||\n";
-	cout << "==================================================================\n";
-}
 
 int main() {
 	return 0;

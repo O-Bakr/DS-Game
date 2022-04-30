@@ -127,6 +127,109 @@ void Stats() {
 	cout << "==================================================================\n";
 }
 
+// This function takes a pointer to a node and moves it by 'n' nodes
+// this function is for a very specifc purpose regarding printing the playing board
+void move(node** p, int n) {
+	for (int i = 0; i < n; i++)
+		*p = (*p)->next;
+}
+
+// This function is designed to print the playing board by visiting each node and printing the data inside it
+// following the printing mechanism for any programming language (left to right then top to bottom)
+void Board(node* last) {
+	// to scan the playing board and print it properly we to need to keep track of a pointer and we need to be able
+	// to easily move the pointer around the list
+
+	node* p;
+	p = last;
+
+	// Player 2 will appear on the top of the board so we need to print their part first
+	// and since the pointer 'last' now points to one node behind player 1 base we will move
+	// a pointer 24 nodes to reach the first node to be printed
+
+	/* first node to -> 0 0 0
+		be printed		0	0 <- player 2 base
+						0	0
+						0	0
+						0	0
+					    0	0
+			0 0 0 0 0 0		  0 0 0 0 0 0
+			0							0
+			0 0 0 0 0 0		  0 0 0 0 0 0
+						0	0
+						0	0
+						0	0
+						0	0
+	  player 1 base  -> 0	0
+				last -> 0 0 0
+	*/
+
+
+	// Top vertical part
+	move(&p, 24);
+
+	cout << "\n\n\t\t            ";
+	for (int i = 0; i < 3; i++) {
+		cout << p->data << " ";
+		p = p->next;
+	}
+	cout << endl;
+	cout << "\t\t            ";
+	move(&p, 48); cout << p->data << "   "; move(&p, 4); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 47); cout << p->data << "   "; move(&p, 6); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 45); cout << p->data << "   "; move(&p, 8); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 43); cout << p->data << "   "; move(&p, 10); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 41); cout << p->data << "   "; move(&p, 12); cout << p->data << "\n\t\t";
+
+	// Left horizontal part
+	move(&p, 34);
+	for (int i = 0; i < 6; i++) {
+		cout << p->data << " ";
+		p = p->next;
+	}
+	cout << "      "; move(&p, 13);
+
+	// Right horizontal part
+	for (int i = 0; i < 6; i++) {
+		cout << p->data << " ";
+		p = p->next;
+	}
+	move(&p, 26); cout << "\n\t\t" << p->data << "                           "; move(&p, 26); cout << p->data << "\n\t\t";
+	move(&p, 25);
+	for (int i = 0; i < 6; i++) {
+		cout << p->data << " ";
+		move(&p, 51);
+	}
+	cout << "      "; move(&p, 39);
+	for (int i = 0; i < 6; i++) {
+		cout << p->data << " ";
+		move(&p, 51);
+	}
+
+	// Bottom vertical part
+	cout << "\n\t\t            ";
+	move(&p, 19); cout << p->data << "   "; move(&p, 40); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 11); cout << p->data << "   "; move(&p, 42); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 9); cout << p->data << "   "; move(&p, 44); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 7); cout << p->data << "   "; move(&p, 46); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 5); cout << p->data << "   "; move(&p, 48); cout << p->data << endl;
+	cout << "\t\t            ";
+	move(&p, 3);
+	for (int i = 0; i < 3; i++) {
+		cout << p->data << " ";
+		move(&p, 51);
+	}
+	cout << endl;
+}
+
 int main() {
 	return 0;
 }

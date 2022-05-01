@@ -393,7 +393,106 @@ void Start(node** last) {
 					goto start;
 			}
 		}
+		// Player2 turn
+		else {
+			Stats();
+			Board(*last);
+			cout << "\n\tPlayer 2 turn!.\n\tDice: " << dice << endl;
+			// Player2 will be the Bot we play against
+			// Moving mechanism will be the same as player1
+			// and we made a simple playing technique for the Bot
+			//		1- Bot will always favour getting a piece out of their base than moving the current active piece
+			//		2- If the difference between the two pieces is more than 6 tiles then the Bot will move the piece behind
+
+			if (dice == 6 && player2.Static_Piece) {
+				// Getting a piece out of the base
+				if (player2.Static_Piece == 2) {
+					player2.piece1 = player2_base;
+					player2.piece1->data = 2;
+				}
+				// if there is only one piece in the base get out
+				else {
+					player2.piece2 = player2_base;
+					player2.piece2->data = 2;
+				}
+				player2.Static_Piece--; player2.Active_Piece++;
+				// player get another turn
+				goto start;
+			}
+			else if (player2.Active_Piece) {
+				// Check if both pieces active and tile difference between them is 6 or less
+				// and piece1 not in wining position then move piece1
+				if ((player2.score1 - player2.score2 <= 6 || !player2.piece2) && player2.score1 < 50) {
+					player2.score1 += dice;
+					player2.piece1->data = 0;
+					move(&player2.piece1, dice);
+					player2.piece1->data = 2;
+
+					//if landed on player1 piece return it to its base (if not in wining position)
+					if (player2.piece1 == player1.piece1 && player1.score1 != 50) {
+						player1.score1 = 0; player1.piece1 = NULL;
+						player1.Active_Piece--; player1.Static_Piece++;
+					}
+					if (player2.piece1 == player1.piece2) {
+						player1.score2 = 0; player1.piece2 = NULL;
+						player1.Active_Piece--; player1.Static_Piece++;
+					}
+				}
+				else if (!player2.Static_Piece) {
+					player2.score2 += dice;
+					player2.piece2->data = 0;
+					move(&player2.piece2, dice);
+					player2.piece2->data = 2;
+
+					if (player2.piece2 == player1.piece1 && player1.score1 != 50) {
+						player1.score1 = 0; player1.piece1 = NULL;
+						player1.Active_Piece--; player1.Static_Piece++;
+					}
+					if (player2.piece2 == player1.piece2) {
+						player1.score2 = 0; player1.piece2 = NULL;
+						player1.Active_Piece--; player1.Static_Piece++;
+					}
+				}
+				if (dice == 6)
+					goto start;
+			}
+		}
+	skip:
+		turns++;
+	}
+}
+
+// Display game instructions
+void Instructions() {
+	cout << "\n\n\n\t\t\t\t\tWelcome to Ludo Game\n\n\n";
+	cout << "\t\tThis ludo game consists of 2 players each player got 2 pieces in base\n";
+	cout << "\n\t\tEach player will throw the dice if it landed on 6 the player";
+	cout << "\n\t\twill be able to get a piece out of his base and will throw the dice once more\n";
+	cout << "\n\t\tIf a player piece landed on the other player piece it will return to its base\n";
+	cout << "\n\t\tThe objective is to get out all pieces and make them reach the end of the board\n\n";
+
+}
 
 int main() {
+	// This function is for choosing a random seed based on the current time of code execution
+	// hence the 'rand' function can return actual random value every different game
+	srand(time(0));
+
+	// Initializing the board
+	node* last = NULL;
+	InitializeGame(&last);
+
+	// Print game instructions
+	Instructions();
+
+	// Starting the game
+	Start(&last);
+	
+	// If code execution reached this line that means a player must have won so we check which player won
+	if (player1.win)
+		cout << "\n\tPLAYER 1 WON CONGRATS!!!\n";
+	else
+		cout << "\n\tPLAYER 2 WON CONGRATS!!!\n";
+
 	return 0;
 }

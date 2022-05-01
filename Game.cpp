@@ -1,4 +1,8 @@
+// Ludo game implementation using circular linked list data structure
+
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 // Implementing nodes for the linked list
